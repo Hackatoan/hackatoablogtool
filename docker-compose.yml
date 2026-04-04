@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  cms:
+    build: .
+    container_name: hackatoa_cms
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - .env
+    volumes:
+      # Optional: Persist the repo clone so it doesn't have to fully re-clone if the container restarts
+      - repo-data:/app/repo
+      # Persist temporarily uploaded files just in case
+      - uploads-data:/app/uploads
+
+volumes:
+  repo-data:
+  uploads-data:
