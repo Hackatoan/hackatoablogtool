@@ -1,0 +1,30 @@
+{
+  "name": "hackatoablogtool",
+  "version": "1.0.0",
+  "description": "updates my website blog # Hackatoa CMS & Automation App Blueprint",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hackatoan/hackatoablogtool.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Hackatoan/hackatoablogtool/issues"
+  },
+  "homepage": "https://github.com/Hackatoan/hackatoablogtool#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "express-basic-auth": "^1.2.1",
+    "multer": "^2.1.1",
+    "simple-git": "^3.33.0",
+    "vm": "^0.1.0"
+  }
+}
