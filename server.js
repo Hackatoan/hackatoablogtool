@@ -44,9 +44,12 @@ const upload = multer({ dest: 'uploads/' });
 async function syncRepo() {
     if (!fs.existsSync(path.join(REPO_DIR, '.git'))) {
         console.log(`Cloning repository...`);
-        // If repo dir exists but has no .git (e.g. Docker volume init), clear it before clone
+        // If repo dir exists but has no .git (e.g. Docker volume init), clear its contents instead of deleting the mount point
         if (fs.existsSync(REPO_DIR)) {
-            fs.rmSync(REPO_DIR, { recursive: true, force: true });
+            const files = fs.readdirSync(REPO_DIR);
+            for (const file of files) {
+                fs.rmSync(path.join(REPO_DIR, file), { recursive: true, force: true });
+            }
         }
         await simpleGit().clone(GITHUB_REPO_URL, REPO_DIR);
     }
