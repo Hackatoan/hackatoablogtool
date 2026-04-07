@@ -97,7 +97,7 @@ app.post('/api/upload/music', upload.array('songs'), async (req, res) => {
 
         const updateScriptPath = path.join(REPO_DIR, 'update-songs.js');
         if (fs.existsSync(updateScriptPath)) {
-            exec(`node update-songs.js`, { cwd: REPO_DIR }, async (error, stdout, stderr) => {
+            exec(`node update-songs.js`, { cwd: REPO_DIR }, async (error) => {
                 if (error) console.error(`Error executing update-songs.js: ${error}`);
                 await commitLocal(localGit, `Auto CMS Update: Added songs ${fileNames.join(', ')}`);
                 res.send(`Songs uploaded and repository updated successfully.`);
