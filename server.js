@@ -5,6 +5,7 @@ const simpleGit = require('simple-git');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const { moveUploadedFile } = require('./utils/fileUtils');
 const basicAuth = require('express-basic-auth');
 
 const app = express();
