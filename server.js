@@ -5,6 +5,7 @@ const simpleGit = require('simple-git');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const { moveUploadedFile } = require('./utils/fileUtils');
 const basicAuth = require('express-basic-auth');
 
 const app = express();
@@ -69,14 +70,6 @@ async function commitLocal(localGit, message) {
     console.log(`Changes committed successfully! Run publish to push.`);
 }
 
-// Move file from Multer temp storage to Git repo folder
-function moveUploadedFile(file, destinationPath) {
-    const destDir = path.dirname(destinationPath);
-    if (!fs.existsSync(destDir)) {
-        fs.mkdirSync(destDir, { recursive: true });
-    }
-    fs.renameSync(file.path, destinationPath);
-}
 
 // --- API Endpoints ---
 
