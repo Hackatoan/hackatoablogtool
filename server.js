@@ -89,9 +89,10 @@ app.post('/api/upload/music', upload.array('songs'), async (req, res) => {
 
         let fileNames = [];
         for (const file of files) {
-            const destPath = path.join(REPO_DIR, 'public', 'assets', 'songs', file.originalname);
+            const sanitizedFilename = path.basename(file.originalname);
+            const destPath = path.join(REPO_DIR, 'public', 'assets', 'songs', sanitizedFilename);
             moveUploadedFile(file, destPath);
-            fileNames.push(file.originalname);
+            fileNames.push(sanitizedFilename);
         }
 
         const updateScriptPath = path.join(REPO_DIR, 'update-songs.js');
@@ -121,9 +122,10 @@ app.post('/api/upload/mushroom', upload.array('mushroomImages'), async (req, res
 
         let fileNames = [];
         for (const file of files) {
-            const destPath = path.join(REPO_DIR, 'public', 'assets', 'mycology', file.originalname);
+            const sanitizedFilename = path.basename(file.originalname);
+            const destPath = path.join(REPO_DIR, 'public', 'assets', 'mycology', sanitizedFilename);
             moveUploadedFile(file, destPath);
-            fileNames.push(file.originalname);
+            fileNames.push(sanitizedFilename);
         }
 
         const dataPath = path.join(REPO_DIR, 'public', 'mushrooms-data.js');
@@ -158,7 +160,8 @@ app.post('/api/upload/blog-image', upload.single('blogImage'), async (req, res) 
         const file = req.file;
         if (!file) return res.status(400).send('No file uploaded.');
 
-        const finalFilename = Date.now() + '-' + file.originalname;
+        const sanitizedFilename = path.basename(file.originalname);
+        const finalFilename = Date.now() + '-' + sanitizedFilename;
         const destPath = path.join(REPO_DIR, 'public', 'assets', 'blog-media', finalFilename);
         moveUploadedFile(file, destPath);
 
@@ -326,10 +329,19 @@ app.delete('/api/asset', async (req, res) => {
     try {
         const localGit = await syncRepo();
         const assetPathRelative = req.body.path;
-        if (!assetPathRelative || assetPathRelative.includes('..')) {
+
+        if (!assetPathRelative) {
+            return res.status(400).send('Path is required');
+        }
+
+        // Normalize and resolve the path to ensure it's within the repo directory
+        const baseDir = REPO_DIR + path.sep;
+        const absolutePath = path.resolve(baseDir, assetPathRelative);
+
+        if (!absolutePath.startsWith(baseDir)) {
             return res.status(400).send('Invalid path');
         }
-        const absolutePath = path.join(REPO_DIR, assetPathRelative);
+
         if (fs.existsSync(absolutePath)) {
             fs.unlinkSync(absolutePath);
             await commitLocal(localGit, `Auto CMS Update: Deleted asset ${assetPathRelative}`);
