@@ -37,6 +37,22 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // Use stale-while-revalidate strategy for the HTML shell
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      caches.match(event.request).then(cachedResponse => {
+        const fetchPromise = fetch(event.request).then(networkResponse => {
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, networkResponse.clone());
+          });
+          return networkResponse;
+        });
+        return cachedResponse || fetchPromise;
+      })
+    );
+    return;
+  }
+
   // Use cache-first strategy for static assets
   event.respondWith(
     caches.match(event.request)

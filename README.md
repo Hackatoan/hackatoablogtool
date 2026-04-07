@@ -47,6 +47,23 @@ The goal is to provide a clean Web UI where you can upload files or write text, 
 
 ---
 
+## Running with Docker
+
+You can easily run this CMS locally or on a VPS using Docker and Docker Compose. This ensures a consistent environment and automatically handles updates via Watchtower.
+
+1. **Copy the example environment file:**
+   ```bash
+   cp .env.example .env
+   ```
+2. **Configure your `.env` file:** Fill in your GitHub username, PAT, repo details, and set a strong `ADMIN_USERNAME` and `ADMIN_PASSWORD` for the CMS login.
+3. **Start the containers:**
+   ```bash
+   docker-compose up -d
+   ```
+4. The CMS will now be accessible at `http://localhost:3000`.
+
+---
+
 ## The AI Prompt
 
 *Copy and paste the text below into the chat when you open the new workspace/repo for your CMS app.*

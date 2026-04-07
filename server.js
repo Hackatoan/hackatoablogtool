@@ -14,7 +14,9 @@ const PORT = process.env.PORT || 3000;
 // Path to the local repository clone
 const REPO_DIR = path.join(__dirname, 'repo');
 // Construct the GitHub URL from env vars since dotenv doesn't interpolate by default
-const GITHUB_REPO_URL = `https://${process.env.GITHUB_USERNAME}:${process.env.GITHUB_PAT}@github.com/${process.env.GITHUB_USERNAME}/${process.env.GITHUB_REPO}.git`;
+const GITHUB_REPO_URL = process.env.GITHUB_USERNAME && process.env.GITHUB_PAT
+    ? `https://${encodeURIComponent(process.env.GITHUB_USERNAME)}:${encodeURIComponent(process.env.GITHUB_PAT)}@github.com/${encodeURIComponent(process.env.GITHUB_USERNAME)}/${encodeURIComponent(process.env.GITHUB_REPO)}.git`
+    : '';
 
 // Configure Git
 const git = simpleGit();
