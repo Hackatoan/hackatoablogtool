@@ -5,67 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hackatoa CMS Dashboard</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- EasyMDE CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
     <style>
         body {
-            font-family: sans-serif;
-            background: #f4f4f4;
-            padding: 20px;
+            background-color: #f8f9fa;
         }
-
         .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
         }
-
-        h1,
-        h2 {
-            color: #333;
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        .card-header {
+            font-weight: bold;
         }
-
-        label {
-            display: block;
-            margin: 10px 0 5px;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
-            margin-top: 15px;
-            padding: 10px 15px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #218838;
-        }
-
         .success {
             color: green;
             margin-top: 10px;
         }
-
         .error {
             color: red;
             margin-top: 10px;
@@ -74,89 +35,166 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Hackatoa Headless CMS Dashboard</h1>
+    <div class="container py-5">
+        <h1 class="mb-4 text-center">Hackatoa Headless CMS Dashboard</h1>
 
-        <!-- Music Upload -->
-        <div class="section">
-            <h2>1. Upload Music (.mp3 or .wav)</h2>
-            <form id="music-form" action="/api/upload/music" method="POST" enctype="multipart/form-data">
-                <input type="file" name="songs" accept=".mp3, .wav" multiple required>
-                <button type="submit" id="btn-submit-music">Upload Song(s) & Run Script</button>
-            </form>
-        </div>
+        <div class="row">
+            <!-- Music Upload -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        1. Upload Music (.mp3 or .wav)
+                    </div>
+                    <div class="card-body">
+                        <form id="music-form" action="/api/upload/music" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input class="form-control" type="file" name="songs" accept=".mp3, .wav" multiple required>
+                            </div>
+                            <button class="btn btn-primary w-100" type="submit" id="btn-submit-music">Upload Song(s) & Run Script</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Mushroom Upload -->
-        <div class="section">
-            <h2>2. Upload Mushroom Image(s)</h2>
-            <form id="mushroom-form" action="/api/upload/mushroom" method="POST" enctype="multipart/form-data">
-                <input type="file" name="mushroomImages" accept="image/*" multiple required>
-                <label>Title</label>
-                <input type="text" name="title" required>
-                <label>Description</label>
-                <textarea name="description" rows="3" required></textarea>
-                <button type="submit" id="btn-submit-mushroom">Upload Mushroom Entry</button>
-            </form>
-        </div>
-
-        <!-- Blog Image Upload -->
-        <div class="section">
-            <h2>3. Upload Blog Image (For Inline Editor Use)</h2>
-            <form id="blog-image-form" action="/api/upload/blog-image" method="POST" enctype="multipart/form-data">
-                <input type="file" name="blogImage" accept="image/*" required>
-                <button type="submit" id="btn-blog-image">Upload Image to get URL</button>
-            </form>
-            <div id="image-url-result" style="margin-top: 10px; font-weight: bold;"></div>
+            <!-- Mushroom Upload -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        2. Upload Mushroom Image(s)
+                    </div>
+                    <div class="card-body">
+                        <form id="mushroom-form" action="/api/upload/mushroom" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input class="form-control" type="file" name="mushroomImages" accept="image/*" multiple required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <input class="form-control" type="text" name="title" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" name="description" rows="2" required></textarea>
+                            </div>
+                            <button class="btn btn-success w-100" type="submit" id="btn-submit-mushroom">Upload Mushroom Entry</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Submit Blog Post -->
-        <div class="section">
-            <h2>4. Write a Blog Post ("Lava Log")</h2>
-            <form id="blog-post-form" action="/api/blog/post" method="POST">
-                <input type="hidden" name="id" id="edit-id">
-                <label>Post Title</label>
-                <input type="text" name="title" id="edit-title" required>
-                <label>Cover Image Path (Optional, eg. "assets/blog-media/image.jpg")</label>
-                <input type="text" name="image" id="edit-image" placeholder="Relative path to cover image...">
-                <label>Link Label (Optional button label)</label>
-                <input type="text" name="linkLabel" id="edit-linkLabel" placeholder="e.g. GitHub Source">
-                <label>Link Href (Optional button link)</label>
-                <input type="text" name="linkHref" id="edit-linkHref" placeholder="e.g. https://github.com/Hackatoan">
-                <label>Content (Markdown or plain text allowed)</label>
-                <textarea name="content" id="edit-content" rows="10" required
-                    placeholder="To embed inline image, use URL from section 3..."></textarea>
-                <button type="submit" id="btn-submit-post">Save Blog Entry Locally</button>
-                <button type="button" id="btn-cancel-edit" style="display:none; background: #6c757d;">Cancel
-                    Edit</button>
-            </form>
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                3. Write a Blog Post ("Lava Log")
+            </div>
+            <div class="card-body">
+                <form id="blog-post-form" action="/api/blog/post" method="POST">
+                    <input type="hidden" name="id" id="edit-id">
+                    <div class="mb-3">
+                        <label class="form-label">Post Title</label>
+                        <input class="form-control" type="text" name="title" id="edit-title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Cover Image Path (Optional, eg. "assets/blog-media/image.jpg")</label>
+                        <input class="form-control" type="text" name="image" id="edit-image" placeholder="Relative path to cover image...">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Link Label (Optional button label)</label>
+                            <input class="form-control" type="text" name="linkLabel" id="edit-linkLabel" placeholder="e.g. GitHub Source">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Link Href (Optional button link)</label>
+                            <input class="form-control" type="text" name="linkHref" id="edit-linkHref" placeholder="e.g. https://github.com/Hackatoan">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Content (Markdown or plain text allowed)</label>
+                        <textarea name="content" id="edit-content"></textarea>
+                    </div>
+                    <button class="btn btn-info text-white" type="submit" id="btn-submit-post">Save Blog Entry Locally</button>
+                    <button class="btn btn-secondary" type="button" id="btn-cancel-edit" style="display:none;">Cancel Edit</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Blog Image Upload -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                Standalone Blog Image Upload (Utility)
+            </div>
+            <div class="card-body">
+                <form id="blog-image-form" action="/api/upload/blog-image" method="POST" enctype="multipart/form-data">
+                    <div class="input-group mb-3">
+                        <input class="form-control" type="file" name="blogImage" accept="image/*" required>
+                        <button class="btn btn-outline-secondary" type="submit" id="btn-blog-image">Upload Image to get URL</button>
+                    </div>
+                </form>
+                <div id="image-url-result"></div>
+            </div>
         </div>
 
         <!-- Manage Posts and Assets -->
-        <div class="section" style="background-color: #fff9e6; border: 2px dashed #ffc107;">
-            <h2>5. Review & Publish to GitHub</h2>
-            <p>Changes you make above are saved <b>locally</b> on this server. When you are ready to update the live
-                website, hit the push button.</p>
-            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
-                <button type="button" id="btn-load-manage" style="background:#17a2b8;">Load Local Content</button>
-                <button type="button" id="btn-publish-all"
-                    style="background:#dc3545; padding: 10px 25px; font-weight: bold; font-size: 1.1em;">🚀 PUSH CHANGES
-                    TO GITHUB</button>
+        <div class="card border-warning border-2">
+            <div class="card-header bg-warning text-dark fw-bold">
+                4. Review & Publish to GitHub
             </div>
-            <div id="manage-area" style="display:none;">
-                <div style="display: flex; gap: 20px;">
-                    <div style="flex: 1;">
-                        <h3>Active Blog Posts</h3>
-                        <ul id="blog-list" style="list-style:none; padding:0;"></ul>
-                    </div>
-                    <div style="flex: 1;">
-                        <h3>Uploaded Assets</h3>
-                        <ul id="asset-list" style="list-style:none; padding:0;"></ul>
+            <div class="card-body bg-light">
+                <p>Changes you make above are saved <b>locally</b> on this server. When you are ready to update the live website, hit the push button.</p>
+                <div class="d-flex gap-3 mb-4">
+                    <button class="btn btn-info text-white" type="button" id="btn-load-manage">Load Local Content</button>
+                    <button class="btn btn-danger fw-bold px-4" type="button" id="btn-publish-all">🚀 PUSH CHANGES TO GITHUB</button>
+                </div>
+
+                <div id="manage-area" style="display:none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Active Blog Posts</h4>
+                            <ul class="list-group" id="blog-list"></ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Uploaded Assets</h4>
+                            <ul class="list-group" id="asset-list"></ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- EasyMDE JS -->
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
     <script>
+        // Initialize EasyMDE
+        const easyMDE = new EasyMDE({
+            element: document.getElementById('edit-content'),
+            spellChecker: false,
+            uploadImage: true,
+            imageMaxSize: 1024 * 1024 * 5, // 5MB
+            imageAccept: 'image/png, image/jpeg, image/gif, image/webp',
+            imageUploadFunction: async (file, onSuccess, onError) => {
+                const formData = new FormData();
+                formData.append('blogImage', file);
+                try {
+                    const res = await fetch('/api/upload/blog-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        // onSuccess takes the image URL
+                        onSuccess(data.url);
+                    } else {
+                        onError('Upload failed');
+                    }
+                } catch (err) {
+                    onError('Connection error');
+                }
+            }
+        });
+
         // Form states
         let isEditing = false;
         let allPosts = [];
@@ -209,13 +247,16 @@
                 document.getElementById('image-url-result').className = 'success';
             } catch (err) {
                 document.getElementById('image-url-result').innerText = 'Error uploading image.';
-                document.getElementById('image-url-result').className = 'error';
+                document.getElementById('image-url-result').className = 'error text-danger';
             }
         };
 
         // Submit or Update Post Form
         document.getElementById('blog-post-form').onsubmit = async (e) => {
             e.preventDefault();
+            // sync EasyMDE content to textarea
+            document.getElementById('edit-content').value = easyMDE.value();
+
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
 
@@ -269,10 +310,16 @@
 
                 allPosts.forEach(post => {
                     const li = document.createElement('li');
-                    li.style.marginBottom = '10px';
-                    li.innerHTML = `<strong>${post.title}</strong> (${post.id})<br/>
-                    <button type="button" style="padding: 3px 8px; margin-right: 5px; font-size: 12px; margin-top:5px; background: #ffc107; color: black;" onclick="startEdit('${post.id}')">Edit</button>
-                    <button type="button" style="padding: 3px 8px; font-size: 12px; margin-top:5px; background: #dc3545;" onclick="deletePost('${post.id}')">Delete</button>
+                    li.className = 'list-group-item d-flex justify-content-between align-items-start';
+                    li.innerHTML = `
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">${post.title}</div>
+                            <small class="text-muted">${post.id}</small>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-warning me-1" onclick="startEdit('${post.id}')">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deletePost('${post.id}')">Delete</button>
+                        </div>
                     `;
                     postsList.appendChild(li);
                 });
@@ -285,16 +332,19 @@
 
                 assets.forEach(asset => {
                     const li = document.createElement('li');
-                    li.style.marginBottom = '10px';
-                    li.innerHTML = `<span>${asset}</span><br/>
-                    <button type="button" style="padding: 3px 8px; font-size: 12px; margin-top:5px; background: #dc3545;" onclick="deleteAsset('${asset}')">Delete File</button>
+                    li.className = 'list-group-item d-flex justify-content-between align-items-start text-break';
+                    li.innerHTML = `
+                        <div class="ms-2 me-auto small">
+                            ${asset}
+                        </div>
+                        <button class="btn btn-sm btn-danger ms-2 flex-shrink-0" onclick="deleteAsset('${asset}')">Delete</button>
                     `;
                     assetList.appendChild(li);
                 });
             } catch (e) {
                 alert('Error loading management data');
             }
-            document.getElementById('btn-load-manage').innerText = 'Refresh Content Data';
+            document.getElementById('btn-load-manage').innerText = 'Load Local Content';
         }
 
         // Edit Post
@@ -305,7 +355,7 @@
 
             document.getElementById('edit-id').value = post.id;
             document.getElementById('edit-title').value = post.title;
-            document.getElementById('edit-content').value = post.body;
+            easyMDE.value(post.body);
             document.getElementById('edit-image').value = post.image || '';
 
             if (post.links && post.links.length > 0) {
@@ -326,8 +376,9 @@
         function resetEditMode() {
             isEditing = false;
             document.getElementById('blog-post-form').reset();
+            easyMDE.value('');
             document.getElementById('edit-id').value = '';
-            document.getElementById('btn-submit-post').innerText = 'Save Blog Entry';
+            document.getElementById('btn-submit-post').innerText = 'Save Blog Entry Locally';
             document.getElementById('btn-cancel-edit').style.display = 'none';
         }
 
