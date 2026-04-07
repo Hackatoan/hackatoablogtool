@@ -70,48 +70,7 @@ async function commitLocal(localGit, message) {
     console.log(`Changes committed successfully! Run publish to push.`);
 }
 
-// Move file from Multer temp storage to Git repo folder
-async function moveUploadedFile(file, destinationPath) {
-    const destDir = path.dirname(destinationPath);
-    if (!fs.existsSync(destDir)) {
-        await fs.promises.mkdir(destDir, { recursive: true });
-    }
-    await fs.promises.rename(file.path, destinationPath);
-}
-
 // --- API Endpoints ---
-
-// 1. Music Upload
-app.post('/api/upload/music', upload.array('songs'), async (req, res) => {
-    try {
-        const localGit = await syncRepo();
-        const files = req.files;
-        if (!files || files.length === 0) return res.status(400).send('No files uploaded.');
-
-        let fileNames = [];
-        for (const file of files) {
-            const sanitizedFilename = path.basename(file.originalname);
-            const destPath = path.join(REPO_DIR, 'public', 'assets', 'songs', sanitizedFilename);
-            moveUploadedFile(file, destPath);
-            fileNames.push(sanitizedFilename);
-        }
-
-        const updateScriptPath = path.join(REPO_DIR, 'update-songs.js');
-        if (fs.existsSync(updateScriptPath)) {
-            exec(`node update-songs.js`, { cwd: REPO_DIR }, async (error) => {
-                if (error) console.error(`Error executing update-songs.js: ${error}`);
-                await commitLocal(localGit, `Auto CMS Update: Added songs ${fileNames.join(', ')}`);
-                res.send(`Songs uploaded and repository updated successfully.`);
-            });
-        } else {
-            await commitLocal(localGit, `Auto CMS Update: Added songs ${fileNames.join(', ')}`);
-            res.send(`Songs uploaded successfully (no update-songs.js found).`);
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
-    }
-});
 
 // 2. Mushroom Upload
 app.post('/api/upload/mushroom', upload.array('mushroomImages'), async (req, res) => {
