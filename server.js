@@ -70,12 +70,12 @@ async function commitLocal(localGit, message) {
 }
 
 // Move file from Multer temp storage to Git repo folder
-function moveUploadedFile(file, destinationPath) {
+async function moveUploadedFile(file, destinationPath) {
     const destDir = path.dirname(destinationPath);
     if (!fs.existsSync(destDir)) {
-        fs.mkdirSync(destDir, { recursive: true });
+        await fs.promises.mkdir(destDir, { recursive: true });
     }
-    fs.renameSync(file.path, destinationPath);
+    await fs.promises.rename(file.path, destinationPath);
 }
 
 // --- API Endpoints ---
@@ -88,11 +88,12 @@ app.post('/api/upload/music', upload.array('songs'), async (req, res) => {
         if (!files || files.length === 0) return res.status(400).send('No files uploaded.');
 
         let fileNames = [];
-        for (const file of files) {
+        const movePromises = files.map(file => {
             const destPath = path.join(REPO_DIR, 'public', 'assets', 'songs', file.originalname);
-            moveUploadedFile(file, destPath);
             fileNames.push(file.originalname);
-        }
+            return moveUploadedFile(file, destPath);
+        });
+        await Promise.all(movePromises);
 
         const updateScriptPath = path.join(REPO_DIR, 'update-songs.js');
         if (fs.existsSync(updateScriptPath)) {
@@ -120,11 +121,12 @@ app.post('/api/upload/mushroom', upload.array('mushroomImages'), async (req, res
         if (!files || files.length === 0) return res.status(400).send('No files uploaded.');
 
         let fileNames = [];
-        for (const file of files) {
+        const movePromises = files.map(file => {
             const destPath = path.join(REPO_DIR, 'public', 'assets', 'mycology', file.originalname);
-            moveUploadedFile(file, destPath);
             fileNames.push(file.originalname);
-        }
+            return moveUploadedFile(file, destPath);
+        });
+        await Promise.all(movePromises);
 
         const dataPath = path.join(REPO_DIR, 'public', 'mushrooms-data.js');
         if (fs.existsSync(dataPath)) {
@@ -160,7 +162,7 @@ app.post('/api/upload/blog-image', upload.single('blogImage'), async (req, res) 
 
         const finalFilename = Date.now() + '-' + file.originalname;
         const destPath = path.join(REPO_DIR, 'public', 'assets', 'blog-media', finalFilename);
-        moveUploadedFile(file, destPath);
+        await moveUploadedFile(file, destPath);
 
         // We do *not* commit immediately here typically, as the user is still writing the blog post.
         // It will be committed when the final blog post is submitted.
