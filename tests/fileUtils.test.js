@@ -35,7 +35,22 @@ describe('moveUploadedFile', () => {
         expect(fs.renameSync).toHaveBeenCalledWith(mockFile.path, destinationPath);
     });
 
-    test('should propagate error if fs.renameSync fails', () => {
+    test('should fallback to copy and unlink if renameSync throws EXDEV', () => {
+        fs.existsSync.mockReturnValue(true);
+        const error = new Error('Rename failed');
+        error.code = 'EXDEV';
+        fs.renameSync.mockImplementation(() => {
+            throw error;
+        });
+
+        moveUploadedFile(mockFile, destinationPath);
+
+        expect(fs.renameSync).toHaveBeenCalledWith(mockFile.path, destinationPath);
+        expect(fs.copyFileSync).toHaveBeenCalledWith(mockFile.path, destinationPath);
+        expect(fs.unlinkSync).toHaveBeenCalledWith(mockFile.path);
+    });
+
+    test('should propagate error if fs.renameSync fails with a non-EXDEV error', () => {
         fs.existsSync.mockReturnValue(true);
         const error = new Error('Rename failed');
         fs.renameSync.mockImplementation(() => {
