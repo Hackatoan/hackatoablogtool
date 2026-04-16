@@ -11,7 +11,16 @@ function moveUploadedFile(file, destinationPath) {
     if (!fs.existsSync(destDir)) {
         fs.mkdirSync(destDir, { recursive: true });
     }
-    fs.renameSync(file.path, destinationPath);
+    try {
+        fs.renameSync(file.path, destinationPath);
+    } catch (err) {
+        if (err.code === 'EXDEV') {
+            fs.copyFileSync(file.path, destinationPath);
+            fs.unlinkSync(file.path);
+        } else {
+            throw err;
+        }
+    }
 }
 
 module.exports = {
