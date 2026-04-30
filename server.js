@@ -39,7 +39,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Configure Multer for File Uploads
 // Temporary storage before moving files into the Git repository
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+    dest: 'uploads/',
+    fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type. Only JPEG, PNG, GIF, and WEBP are allowed.'), false);
+        }
+    }
+});
 
 // --- Helper Functions ---
 
@@ -75,7 +85,16 @@ async function commitLocal(localGit, message) {
 // --- API Endpoints ---
 
 // 2. Mushroom Upload
-app.post('/api/upload/mushroom', upload.array('mushroomImages'), async (req, res) => {
+app.post('/api/upload/mushroom', (req, res, next) => {
+    upload.array('mushroomImages')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).send(err.message);
+        } else if (err) {
+            return res.status(400).send(err.message);
+        }
+        next();
+    });
+}, async (req, res) => {
     try {
         const localGit = await syncRepo();
         const files = req.files;
@@ -116,7 +135,16 @@ app.post('/api/upload/mushroom', upload.array('mushroomImages'), async (req, res
 });
 
 // 3. Blog Image Upload (Markdown Inline)
-app.post('/api/upload/blog-image', upload.single('blogImage'), async (req, res) => {
+app.post('/api/upload/blog-image', (req, res, next) => {
+    upload.single('blogImage')(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            return res.status(400).send(err.message);
+        } else if (err) {
+            return res.status(400).send(err.message);
+        }
+        next();
+    });
+}, async (req, res) => {
     try {
         await syncRepo();
         const file = req.file;
