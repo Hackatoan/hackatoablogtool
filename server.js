@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const { moveUploadedFile } = require('./utils/fileUtils');
+const { commitLocal } = require('./utils/gitUtils');
 const basicAuth = require('express-basic-auth');
 
 const app = express();
@@ -64,13 +65,6 @@ async function syncRepo() {
     return localGit;
 }
 
-// Commit changes locally without pushing
-async function commitLocal(localGit, message) {
-    console.log(`Committing changes locally...`);
-    await localGit.add('./*');
-    await localGit.commit(message);
-    console.log(`Changes committed successfully! Run publish to push.`);
-}
 
 // --- API Endpoints ---
 
