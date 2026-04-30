@@ -95,11 +95,15 @@ app.post('/api/upload/mushroom', upload.array('mushroomImages'), async (req, res
             let fileContent = fs.readFileSync(dataPath, 'utf8');
             const dateStr = new Date().toISOString().split('T')[0];
 
-            let newEntries = [];
-            for (let i = 0; i < fileNames.length; i++) {
+            const newEntries = fileNames.map((fileName, i) => {
                 const imgNum = fileNames.length > 1 ? ` ${i + 1}` : '';
-                newEntries.push(`    {\n        image: 'assets/mycology/${fileNames[i]}',\n        alt: ${JSON.stringify(description)},\n        title: ${JSON.stringify(title + imgNum)},\n        meta: '${dateStr}',\n    }`);
-            }
+                return `    {
+        image: 'assets/mycology/${fileName}',
+        alt: ${JSON.stringify(description)},
+        title: ${JSON.stringify(title + imgNum)},
+        meta: '${dateStr}',
+    }`;
+            });
 
             const entriesString = newEntries.join(',\n') + ',';
             // Prepend new objects right after the start of the array
